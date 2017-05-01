@@ -40,6 +40,13 @@ class ViewController: UIViewController {
             print(event)
         }).addDisposableTo(self.disposeBag)
         
+        // just 
+        
+        let justTest = Observable<String>.just("example")
+        justTest.subscribe { event in
+            print(event)
+        }.addDisposableTo(self.disposeBag)
+        
     }
 
 }
