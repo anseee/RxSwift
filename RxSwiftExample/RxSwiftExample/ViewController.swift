@@ -9,37 +9,31 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import Alamofire
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var button: UIButton!
-    
-    var viewModel: ViewModel!
     let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.viewModel = ViewModel()
-        self.bind()
-    }
-    
-    func bind() {
-        self.viewModel.outputs.number
-            .subscribe(onNext: { number in
-                print(number)
-            })
-            .addDisposableTo(disposeBag)
         
-        self.button.rx.tap
-            .subscribe(onNext: viewModel.inputs.request1)
-            .addDisposableTo(disposeBag)
+        // 옵저버 생성 -> <제너럴 타입 결정> -> create -> 넥스트, 완료 -> 리턴(Disposables)
+        let nameObservable = Observable<String>.create { observer -> Disposable in
+            observer.on(.next("next"))
+            observer.on(.completed)
+            return Disposables.create {
+                print("이름")
+            }
+        }
+        
+        // 구독 -> 이벤트 결과
+        nameObservable.subscribe(onNext:{ event in
+            print(event)
+        }).addDisposableTo(disposeBag)
+        
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
 
 }
 
