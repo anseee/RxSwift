@@ -31,7 +31,14 @@ class ViewController: UIViewController {
         // 구독 -> 이벤트 결과
         nameObservable.subscribe(onNext:{ event in
             print(event)
-        }).addDisposableTo(disposeBag)
+        }).addDisposableTo(self.disposeBag)
+        
+        // generate Example
+        let generateExample = Observable.generate(initialState: 1, condition: { $0 < 50 }, iterate: { $0 + 5 })
+        
+        generateExample.subscribe(onNext: { event in
+            print(event)
+        }).addDisposableTo(self.disposeBag)
         
     }
 
