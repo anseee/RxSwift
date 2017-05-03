@@ -18,34 +18,41 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
+        // 기본적인 패턴
+        button.rx.tap
+            .subscribe(onNext: { [weak self] in self?.reload() })
+            .addDisposableTo(disposeBag)
         
-        // 옵저버 생성 -> <제너럴 타입 결정> -> create -> 넥스트, 완료 -> 리턴(Disposables)
-        let nameObservable = Observable<String>.create { observer -> Disposable in
-            observer.on(.next("next"))
-            observer.on(.completed)
-            return Disposables.create {
-                print("이름")
-            }
-        }
         
-        // 구독 -> 이벤트 결과
-        nameObservable.subscribe(onNext:{ event in
-            print(event)
-        }).addDisposableTo(self.disposeBag)
+        // bindNext를 이용해서 간결하게
+        button.rx.tap.bindNext(reload).addDisposableTo(disposeBag)
         
-        // generate Example
-        let generateExample = Observable.generate(initialState: 1, condition: { $0 < 50 }, iterate: { $0 + 5 })
+        // 오퍼레이터 추가
+        button.rx.tap
+            .do(onNext: {
+                print("Reload button clicked")
+            })
+            .bindNext(reload)
+            .addDisposableTo(disposeBag)
         
-        generateExample.subscribe(onNext: { event in
-            print(event)
-        }).addDisposableTo(self.disposeBag)
+        // 오퍼레이터 추가 debounce
         
-        // just 
+        button.rx.tap
+            .debounce(0.3, scheduler: MainScheduler.instance)
+            .do(onNext: {
+                print("Reload Button clicked")
+            })
+            .bindNext(reload)
+            .addDisposableTo(disposeBag)
         
-        let justTest = Observable<String>.just("example")
-        justTest.subscribe { event in
-            print(event)
-        }.addDisposableTo(self.disposeBag)
+        
+        
+    }
+    
+    func reload() {
+        
+        // API 요청 구현
         
     }
 
